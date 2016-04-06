@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking"
+	xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:sfdc="http://www.mulesoft.org/schema/mule/sfdc" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/sfdc http://www.mulesoft.org/schema/mule/sfdc/current/mule-sfdc.xsd
+http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee/dw/current/dw.xsd
+http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd">
+	<sfdc:config-with-oauth name="Salesforce__OAuth_v2_0"
+		consumerKey="3MVG9ZL0ppGP5UrDWTQIxMNsvS9T.RjdYJXag6e2WN.6VVlc7EICnv9RfaGw7sH6iu.rpfrk3exapn.aTloeM"
+		consumerSecret="7790219047410166418" doc:name="Salesforce: OAuth v2.0">
+		<sfdc:oauth-callback-config domain="localhost"
+			localPort="9999" path="oauth2/callback" />
+	</sfdc:config-with-oauth>
+	<flow name="oauth2-authenticationFlow">
+		<http:listener config-ref="HTTP_Listener_Configuration"
+			path="/authcode/timestamp" doc:name="HTTP" />
+		<sfdc:authorize config-ref="Salesforce__OAuth_v2_0"
+			doc:name="Salesforce" accessTokenUrl="https://login.salesforce.com/services/oauth2/token"
+			authorizationUrl="https://login.salesforce.com/services/oauth2/authorize"
+			display="PAGE"  prompt="LOGIN" />
+		<sfdc:get-server-timestamp config-ref="Salesforce__OAuth_v2_0"
+			doc:name="Salesforce" />
+		<dw:transform-message doc:name="Transform Message">
+			<dw:set-payload><![CDATA[%dw 1.0
+%output application/json
+---
+timestamp: payload
+]]></dw:set-payload>
+		</dw:transform-message>
+        <catch-exception-strategy doc:name="Catch Exception Strategy">
+        </catch-exception-strategy>
+	</flow>
+</mule>

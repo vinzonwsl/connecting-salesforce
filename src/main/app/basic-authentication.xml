@@ -1,25 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:sfdc="http://www.mulesoft.org/schema/mule/sfdc" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
-	xmlns:spring="http://www.springframework.org/schema/beans" 
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<mule xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:sfdc="http://www.mulesoft.org/schema/mule/sfdc"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
 http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
 http://www.mulesoft.org/schema/mule/sfdc http://www.mulesoft.org/schema/mule/sfdc/current/mule-sfdc.xsd
 http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee/dw/current/dw.xsd">
-    <http:listener-config name="HTTP_Listener_Configuration" host="${http.host}" port="${http.port}" doc:name="HTTP Listener Configuration"/>
-    <sfdc:config name="Salesforce__Basic_Authentication" username="${developer.salesforce.username}" password="${developer.salesforce.password}" securityToken="${developer.salesforce.securitytoken}" doc:name="Salesforce: Basic Authentication"/>
-    <flow name="basic-authenticationFlow">
-        <http:listener config-ref="HTTP_Listener_Configuration" path="/basic/timestamp" doc:name="HTTP"/>
+	<http:listener-config name="HTTP_Listener_Configuration"
+		host="${http.host}" port="${http.port}" doc:name="HTTP Listener Configuration" />
+	<sfdc:config name="Salesforce__Basic_Authentication"
+		username="${developer.salesforce.username}" password="${developer.salesforce.password}"
+		securityToken="${developer.salesforce.securitytoken}" doc:name="Salesforce: Basic Authentication" />
+	<flow name="basic-authenticationFlow">
+		<http:listener config-ref="HTTP_Listener_Configuration"
+			path="/basic/timestamp" doc:name="HTTP" />
         <sfdc:get-server-timestamp config-ref="Salesforce__Basic_Authentication" doc:name="Salesforce"/>
-        <dw:transform-message doc:name="Transform Message">
-            <dw:set-payload><![CDATA[%dw 1.0
+
+		<dw:transform-message doc:name="Transform Message">
+			<dw:set-payload><![CDATA[%dw 1.0
 %output application/json
 ---
-{
-	"server_timestamp": payload
-}]]></dw:set-payload>
-        </dw:transform-message>
-    </flow>
+"timestamp": payload
+]]></dw:set-payload>
+		</dw:transform-message>
+	</flow>
 </mule>
