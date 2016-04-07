@@ -2,7 +2,6 @@
 node('tools'){
 def mvnHome = tool 'M3'
 env.PATH = "${mvnHome}/bin:${env.PATH}"
-}
 
 stage 'Build'
 node {
@@ -31,4 +30,5 @@ input message: 'Do you want to deploy?', submitter: 'ops'
 stage name:'Deploy', concurrency: 1
 node {
 echo 'To Do Deployment'
+}
 }
