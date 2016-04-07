@@ -1,23 +1,37 @@
+
+stage 'Checkout'
 node {
-   // Mark the code checkout 'stage'....
-   stage 'Checkout'
+git credentialsId: '7176ddc6-3868-4e2b-9aed-4edbb620ef28', url: 'https://github.com/vinzonwsl/connecting-salesforce.git'
+}
 
-   // Get some code from a GitHub repository
-   git credentialsId: '7176ddc6-3868-4e2b-9aed-4edbb620ef28', url: 'https://github.com/vinzonwsl/connecting-salesforce.git'
+stage 'Build' 
+node {
+withEnv(["PATH+MAVEN=${tool 'm3'}/bin"]) {
+sh "mvn -B –Dmaven.test.failure.ignore=true clean package"
+}
+stash excludes: 'target/', includes: '**', name: 'source'
+}
+stage 'Integration Test'
+parallel 'integration': {
+node {
+unstash 'source' withEnv(["PATH+MAVEN=${tool 'm3'}/bin"]) {
+sh "mvn clean verify" 
+        }
+}
+}, 'Sonar Analysis': {
+node {
+unstash 'source' withEnv(["PATH+MAVEN=${tool 'm3'}/bin"]) {
+sh "mvn sonar:sonar -Psonar-scott" 
+        }
+} 
+}
+stage 'Approve'
+timeout(time: 7, unit: 'DAYS') {
+input message: 'Do you want to deploy?', submitter: 'ops'
+}
 
-   // Get the maven tool.
-   // ** NOTE: This 'M3' maven tool must be configured
-   // **       in the global configuration.           
-   def mvnHome = tool 'M3'
-   env.PATH = "${mvnHome}/bin:${env.PATH}"
-
-   // Mark the code build 'stage'....
-   stage 'Build'
-   // Run the maven build
-   sh "mvn clean install"
-
-   // Mark the code sonar analysis 'stage'....
-   stage 'Sonar Analysis'
-   // Run sonar analysis
-   sh "mvn sonar:sonar -Psonar-scott"
+stage name:'Deploy', concurrency: 1
+node {
+	echo 'To Do Deployment'
+}
 }
