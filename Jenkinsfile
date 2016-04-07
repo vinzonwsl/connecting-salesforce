@@ -6,7 +6,7 @@ git credentialsId: '7176ddc6-3868-4e2b-9aed-4edbb620ef28', url: 'https://github.
 
 stage 'Build' 
 node {
-withEnv(["PATH+MAVEN=${tool 'm3'}/bin"]) {
+withEnv(["PATH+MAVEN=${tool 'M3'}/bin"]) {
 sh "mvn -B –Dmaven.test.failure.ignore=true clean package"
 }
 stash excludes: 'target/', includes: '**', name: 'source'
@@ -14,13 +14,13 @@ stash excludes: 'target/', includes: '**', name: 'source'
 stage 'Integration Test'
 parallel 'integration': {
 node {
-unstash 'source' withEnv(["PATH+MAVEN=${tool 'm3'}/bin"]) {
+unstash 'source' withEnv(["PATH+MAVEN=${tool 'M3'}/bin"]) {
 sh "mvn clean verify" 
         }
 }
 }, 'Sonar Analysis': {
 node {
-unstash 'source' withEnv(["PATH+MAVEN=${tool 'm3'}/bin"]) {
+unstash 'source' withEnv(["PATH+MAVEN=${tool 'M3'}/bin"]) {
 sh "mvn sonar:sonar -Psonar-scott" 
         }
 } 
