@@ -7,12 +7,12 @@ git credentialsId: '7176ddc6-3868-4e2b-9aed-4edbb620ef28', url: 'https://github.
 stage 'Build' 
 node {
 withEnv(["PATH+MAVEN=${tool 'M3'}/bin"]) {
-sh "mvn -B –Dmaven.test.failure.ignore=true clean package"
+sh "mvn -B clean package"
 }
 stash excludes: 'target/', includes: '**', name: 'source'
 }
-stage 'Integration Test'
-parallel 'integration': {
+stage 'Quality'
+parallel 'Test': {
 node {
 unstash 'source' withEnv(["PATH+MAVEN=${tool 'M3'}/bin"]) {
 sh "mvn clean verify" 
