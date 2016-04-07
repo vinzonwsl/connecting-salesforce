@@ -23,7 +23,7 @@ http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/m
 		<sfdc:authorize config-ref="Salesforce__OAuth_v2_0"
 			doc:name="Salesforce" accessTokenUrl="https://login.salesforce.com/services/oauth2/token"
 			authorizationUrl="https://login.salesforce.com/services/oauth2/authorize"
-			display="PAGE"  prompt="LOGIN" />
+			display="PAGE" prompt="LOGIN" />
 		<sfdc:get-server-timestamp config-ref="Salesforce__OAuth_v2_0"
 			doc:name="Salesforce" />
 		<dw:transform-message doc:name="Transform Message">
@@ -33,7 +33,10 @@ http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/m
 timestamp: payload
 ]]></dw:set-payload>
 		</dw:transform-message>
-        <catch-exception-strategy doc:name="Catch Exception Strategy">
-        </catch-exception-strategy>
+		<catch-exception-strategy doc:name="Catch Exception Strategy">
+		</catch-exception-strategy>
 	</flow>
 </mule>
+
+
+
