@@ -1,34 +1,23 @@
 
-node('tools'){
-def mvnHome = tool 'M3'
-env.PATH = "${mvnHome}/bin:${env.PATH}"
-
-stage 'Build'
+stage 'build' 
 node {
-git credentialsId:'7176ddc6-3868-4e2b-9aed-4edbb620ef28', url:'https://github.com/vinzonwsl/connecting-salesforce.git'
-sh "mvn -B clean package"
+git credentialsId:'7176ddc6-3868-4e2b-9aed-4edbb620ef28', url:'https://github.com/vinzonwsl/connecting-salesforce.git' withEnv(["PATH+MAVEN=${tool 'm3'}/bin"]) {
+sh "mvn -B –Dmaven.test.failure.ignore=true clean package"
+}
 stash excludes: 'target/', includes: '**', name: 'source'
 }
-stage
-'Quality'
-parallel 'Test': {
+stage 'test'
+parallel 'integration': {
 node {
-unstash 'source'
-sh "mvn clean verify"
+unstash 'source' withEnv(["PATH+MAVEN=${tool 'm3'}/bin"]) {
+sh "mvn clean verify" 
+        }
 }
-}, 'Sonar Analysis': {
+}, 'quality': {
 node {
-unstash 'source'
-sh "mvn sonar:sonar -Psonar-scott"
-}
-}
-stage 'Approve'
-timeout(time: 7, unit: 'DAYS') {
-input message: 'Do you want to deploy?', submitter: 'ops'
+unstash 'source' withEnv(["PATH+MAVEN=${tool 'm3'}/bin"]) {
+sh "mvn sonar:sonar -Psonar-scott" 
+        }
+} 
 }
 
-stage name:'Deploy', concurrency: 1
-node {
-echo 'To Do Deployment'
-}
-}
