@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.connecting.salesforce</groupId>
 	<artifactId>connecting-salesforce</artifactId>
-	<version>1.0.${BUILD_NUMBER}-SNAPSHOT</version>
+	<version>1.0.${Build_Number}-SNAPSHOT</version>
 	<packaging>mule</packaging>
 	<name>Mule connecting-salesforce Application</name>
 
@@ -71,6 +71,11 @@
 						</configuration>
 					</execution>
 				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>sonar-maven-plugin</artifactId>
+				<version>2.7.1</version>
 			</plugin>
 		</plugins>
 	</build>
